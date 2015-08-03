@@ -39,6 +39,62 @@ component extends="base" {
 	}
 
 	/**
+	 * Get a single feature flag by key. This is the version of the flag that's live on your dashboard-- if you want to see the version that's being evaluated for feature flag requests, use the Get evaluable feature flag resource.
+	 * 
+	 * * GET - https://app.launchdarkly.com/api/features/:key
+	 * 
+	 * @method sendEvent
+	 * @param {Any} event
+	*/
+	public void function track(required string key,
+							  required LDUser user,
+								  any data="",
+								  string event_type = "custom"){
+
+		var params = {"user":arguments.user.asStruct()};
+		params["kind"] = arguments.event_type;
+		params["key"] = arguments.key;
+		params["creationDate"] = DateDiff("s", CreateDate(1970,1,1), Now()) * 100;
+		params["data"] = arguments.data;
+
+		var body = [];
+
+		arrayAppend(body,params);
+
+		var endpoint = this.expandEndpoint('/events/bulk', []);
+
+		//thread action="run" name="#createUUID()#"{
+			this.execute(endpoint=endpoint, method="POST", body=body);	
+		//}
+
+
+	}
+
+	/**
+	 * Get a single feature flag by key. This is the version of the flag that's live on your dashboard-- if you want to see the version that's being evaluated for feature flag requests, use the Get evaluable feature flag resource.
+	 * 
+	 * * GET - https://app.launchdarkly.com/api/features/:key
+	 * 
+	 * @method sendEvent
+	 * @param {Any} event
+	*/
+	public void function identify(required LDUser user){
+
+		var params = {"user":{}};
+		params["kind"] = "identify";
+		params.user = arguments.user.asStruct();
+		params["key"] = arguments.user.getKey();
+		params["creationDate"] = DateDiff("s", CreateDate(1970,1,1), Now()) * 100;
+
+		var body = [];
+
+		arrayAppend(body,params);
+
+		var endpoint = this.expandEndpoint('/events/bulk', []);
+		return this.execute(endpoint=endpoint, method="POST", body=body);
+	}
+
+	/**
 	 * Get the value of a feature flag for the specified user.
 	 * 
 	 * POST - https://app.launchdarkly.com/api/eval/features/:key/:user

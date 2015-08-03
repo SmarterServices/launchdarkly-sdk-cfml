@@ -18,7 +18,7 @@ component output="false" accessors="true"{
 		variables.custom["#arguments.key#"] = arguments.value;
 	}
 
-	public function asJson(){
+	public function asStruct(){
 		var string = "";
 		var struct = {};
 		struct["key"] = getKey();
@@ -38,9 +38,11 @@ component output="false" accessors="true"{
 		if(listLen(structKeyList(getCustom())) > 0)
 			struct["custom"] = getCustom();
 
-		string = serializeJSON(struct);
-		
-		return string;
+		return struct;
+	}
+
+	public function asJson(){
+		return serializeJSON(this.asStruct());
 	}
 
 	public function asBase64(){

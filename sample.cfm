@@ -26,6 +26,14 @@
 	LDUser.addCustom("account", "100");
 	LDUser.addCustom("region", "us-east");
 
+
+	//eventreturn = LDClient.identify(LDUser);
+
+	eventreturn = LDClient.track("Submitted Form", LDUser, {"testing": 123456});
+
+	writeDump(eventreturn);
+
+
 	// see if the user has feature a enabled..
 	feature_a = LDClient.toggle("feature.a", LDUser, false, true);
 	writeDump(feature_a);

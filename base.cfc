@@ -72,8 +72,8 @@ component accessors="true" displayname="LaunchDarkly Client Library" {
 			httpSvc.addParam(type="header", name="Authorization",value="api_key " & getApi_Token()); 
 			httpSvc.addParam(type="header", name="Content-Type",value=Arguments.content_type); 
 			httpSvc.addParam(type="header", name="User-Agent",value="CFML LaunchDarkly Client/1.0"); 
-
-			if(isStruct(Arguments.Body) && arguments.content_type == 'application/json'){
+writeDump(serializeJSON(arguments.body));
+			if((isArray(Arguments.Body) || isStruct(Arguments.Body)) && arguments.content_type == 'application/json'){
 				httpSvc.addParam(type="body",value=serializeJSON(arguments.body));
 			}
 
