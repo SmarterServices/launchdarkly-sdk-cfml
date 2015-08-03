@@ -1,5 +1,8 @@
-# launchdarkly-sdk-cfml
-LaunchDarkly CFML SDK
+# LaunchDarkly CFML SDK/Client Lib
+
+This library does not include the complete LaunchDarkly range of functions, just a few we needed to use.  We will be looking to build out further as the need expands.
+
+LaunchDarkly includes a Java version which can also be used on ColdFusion and Railo, however we wanted to include a library in our codebase without the jar dependencies.
 
 ## Usage
 
