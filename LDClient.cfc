@@ -39,9 +39,49 @@ component extends="base" {
 	}
 
 	/**
+	 * Creates a new feature flag.
+	 * 
+	 * * POST - https://app.launchdarkly.com/api/features
+	 * 
+	 * @method createFeatureFlag
+	 * @param {Struct} feature
+	*/
+	public any function createFeatureFlag(required struct feature){
+		var endpoint = this.expandEndpoint('/features');
+		return this.execute(endpoint=endpoint, method="POST", body=feature);
+	}
+
+	/**
+	 * Updates a feature flag.
+	 * 
+	 * * PATCH - https://app.launchdarkly.com/api/features/:key
+	 * 
+	 * @method updateFeatureFlag
+	 * @param {String} key
+	 * @param {Struct} feature
+	*/
+	public any function updateFeatureFlag(required string key, required struct feature){
+		var endpoint = this.expandEndpoint('/features/:key', [key]);
+		return this.execute(endpoint=endpoint, method="PATCH", body=feature);
+	}
+
+	/**
+	 * Delete a feature flag.
+	 * 
+	 * * DELETE - https://app.launchdarkly.com/api/features/:key
+	 * 
+	 * @method updateFeatureFlag
+	 * @param {String} key
+	*/
+	public any function updateFeatureFlag(required string key){
+		var endpoint = this.expandEndpoint('/features/:key', [key]);
+		return this.execute(endpoint=endpoint, method="DELETE");
+	}
+
+	/**
 	 * Get a single feature flag by key. This is the version of the flag that's live on your dashboard-- if you want to see the version that's being evaluated for feature flag requests, use the Get evaluable feature flag resource.
 	 * 
-	 * * GET - https://app.launchdarkly.com/api/features/:key
+	 * * POST - https://app.launchdarkly.com/api/features/:key
 	 * 
 	 * @method sendEvent
 	 * @param {Any} event
@@ -63,17 +103,15 @@ component extends="base" {
 
 		var endpoint = this.expandEndpoint('/events/bulk', []);
 
-		//thread action="run" name="#createUUID()#"{
-			this.execute(endpoint=endpoint, method="POST", body=body);	
-		//}
-
+		
+		this.execute(endpoint=endpoint, method="POST", body=body, async=true);
 
 	}
 
 	/**
 	 * Get a single feature flag by key. This is the version of the flag that's live on your dashboard-- if you want to see the version that's being evaluated for feature flag requests, use the Get evaluable feature flag resource.
 	 * 
-	 * * GET - https://app.launchdarkly.com/api/features/:key
+	 * * POST - https://app.launchdarkly.com/api/features/:key
 	 * 
 	 * @method sendEvent
 	 * @param {Any} event
@@ -91,13 +129,14 @@ component extends="base" {
 		arrayAppend(body,params);
 
 		var endpoint = this.expandEndpoint('/events/bulk', []);
-		return this.execute(endpoint=endpoint, method="POST", body=body);
+		
+		this.execute(endpoint=endpoint, method="POST", body=body, async=true);
 	}
 
 	/**
 	 * Get the value of a feature flag for the specified user.
 	 * 
-	 * POST - https://app.launchdarkly.com/api/eval/features/:key/:user
+	 * GET - https://app.launchdarkly.com/api/eval/features/:key/:user
 	 * 
 	 * @method toggle
 	 * @param {String} key
@@ -112,7 +151,6 @@ component extends="base" {
 		if(!cacheidexists(cache_id, variables.cache_name) || bypass_cache){
 			try{
 				result = this.execute(endpoint=endpoint, method="GET");
-				//writeDump(result);
 				if(result.successful){
 					if(isBoolean(result.response_parsed.value)){
 
@@ -130,9 +168,7 @@ component extends="base" {
 				return arguments.default;
 			}
 		}else{
-			//writeDump("from_cache");
 			var cache_obj = cacheget(cache_id, variables.cache_name);
-			//writeDump(cache_obj); abort;
 			return cache_obj;
 		}
 	}

@@ -27,18 +27,15 @@
 	LDUser.addCustom("region", "us-east");
 
 
-	//eventreturn = LDClient.identify(LDUser);
-
-	eventreturn = LDClient.track("Submitted Form", LDUser, {"testing": 123456});
-
-	writeDump(eventreturn);
+	LDClient.identify(LDUser);
+	LDClient.track("Submitted Form", LDUser, {"testing": 123456});
 
 
 	// see if the user has feature a enabled..
-	feature_a = LDClient.toggle("feature.a", LDUser, false, true);
+	feature_a = LDClient.toggle("feature.a", LDUser, false, false);
 	writeDump(feature_a);
 
 	// see if the user has feature b enabled..
-	feature_b = LDClient.toggle("feature.b", LDUser, false, true);
+	feature_b = LDClient.toggle("feature.b", LDUser, false, false);
 	writeDump(feature_b)
 </cfscript>

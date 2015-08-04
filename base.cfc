@@ -22,7 +22,7 @@ component accessors="true" displayname="LaunchDarkly Client Library" {
 		return this;
 	}
 
-	private string function expandEndpoint(required string endpoint, required array params){
+	private string function expandEndpoint(required string endpoint, array params=ArrayNew()){
 		var placeholder = "";
 		var finalEndpoint = "";
 		var replacementCount = 1;
@@ -54,7 +54,8 @@ component accessors="true" displayname="LaunchDarkly Client Library" {
 										  string method="GET", 
 										  any body="", 
 										  struct headers=StructNew(),
-										  string content_type="application/json"){
+										  string content_type="application/json",
+										  boolean async=false){
 		var results = {
 			"successful" = true,
 			"http_status_text" = "",
@@ -72,7 +73,7 @@ component accessors="true" displayname="LaunchDarkly Client Library" {
 			httpSvc.addParam(type="header", name="Authorization",value="api_key " & getApi_Token()); 
 			httpSvc.addParam(type="header", name="Content-Type",value=Arguments.content_type); 
 			httpSvc.addParam(type="header", name="User-Agent",value="CFML LaunchDarkly Client/1.0"); 
-writeDump(serializeJSON(arguments.body));
+
 			if((isArray(Arguments.Body) || isStruct(Arguments.Body)) && arguments.content_type == 'application/json'){
 				httpSvc.addParam(type="body",value=serializeJSON(arguments.body));
 			}
@@ -82,25 +83,35 @@ writeDump(serializeJSON(arguments.body));
 				httpSvc.addParam(type="header", name=i,value=arguments.headers[i]); 
 			}
 
-		var sendResult = httpSvc.send().getPrefix();
 
-		results["http_status_code"] = sendResult.responseheader.status_code;
-		results["http_status_text"] = sendResult.responseheader.explanation;
-		
-		results["response"] = sendResult.filecontent;
 
-		results["headers"] = sendResult.responseheader;
+			if(!arguments.async){
+				var sendResult = httpSvc.send().getPrefix();
 
-		if(sendResult.responseheader.status_code >= 300){
-			results.successful = false;
-			
-		}
+				results["http_status_code"] = sendResult.responseheader.status_code;
+				results["http_status_text"] = sendResult.responseheader.explanation;
+				
+				results["response"] = sendResult.filecontent;
 
-		if(results.successful){
-			results["response_parsed"] = deserializeJSON(results.response);
-		}
+				results["headers"] = sendResult.responseheader;
 
-		return results;
+				if(sendResult.responseheader.status_code >= 300){
+					results.successful = false;
+					
+				}
+
+				if(results.successful){
+					results["response_parsed"] = deserializeJSON(results.response);
+				}
+
+				return results;
+
+			}else{
+				thread action="run" name="#createUUID()#" httpSvc="#httpSvc#"{
+					attributes.httpSvc.send().getPrefix();
+				}
+				return {};
+			}
 
 	}
 
